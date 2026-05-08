@@ -4,6 +4,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdminContext } from "./context/AdminContext";
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import { Route, Routes } from "react-router-dom";
+import Dashboard from '../src/pages/Admin/Dashboard'
+import AllAppointments from '../src/pages/Admin/AllAppointments'
+import AddDoctor from '../src/pages/Admin/AddDoctor'
+import DoctorList from '../src/pages/Admin/DoctorsList'
+
 
 const App = () => {
 
@@ -13,6 +20,16 @@ const App = () => {
     <div className="bg-[#F8F9FD]">
       <ToastContainer />
       <Navbar />
+      <div className="flex items-start">
+        <Sidebar />
+        <Routes>
+          <Route path="/" element={<></>} />
+          <Route path="/admin-dashboard" element={<Dashboard />} />
+          <Route path="/all-appointments" element={<AllAppointments />} />
+          <Route path="/add-doctor" element={<AddDoctor />} />
+          <Route path="/doctor-list" element={<DoctorList />} />
+        </Routes>
+      </div>
     </div>
   ) : (
     <>

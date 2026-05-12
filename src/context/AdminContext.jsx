@@ -7,24 +7,24 @@ export const AdminContext = createContext()
 
 const AdminContextProvider = (props) => {
 
-const [aToken, setAToken] = useState(
-    localStorage.getItem('aToken')
-        ? localStorage.getItem('aToken')
-        : '')
+    const [aToken, setAToken] = useState(
+        localStorage.getItem('aToken')
+            ? localStorage.getItem('aToken')
+            : '')
 
-        const [doctors, setDoctors] = useState([])
+    const [doctors, setDoctors] = useState([])
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
     const getAllDoctors = async () => {
         try {
-            
-            const {data} = await axios.post(backendUrl + '/api/admin/all-doctors', {}, {headers:{aToken}}) 
 
-            if(data.success){
+            const { data } = await axios.post(backendUrl + '/api/admin/all-doctors', {}, { headers: { aToken } })
+
+            if (data.success) {
                 setDoctors(data.doctors)
                 console.log(data.doctors)
-            }else{
+            } else {
                 toast.error(data.message)
             }
 
@@ -33,14 +33,56 @@ const [aToken, setAToken] = useState(
         }
     }
 
+    const updateDoctor = async (docId, formData) => {
+        try {
+            const { data } = await axios.post(
+                backendUrl + '/api/admin/update-doctor',
+                formData,
+                { headers: { atoken: aToken } }
+            )
+            if (data.success) {
+                toast.success(data.message)
+                await getAllDoctors()  // refresh list
+                return true
+            } else {
+                toast.error(data.message)
+                return false
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+            return false
+        }
+    }
+
+    const deleteDoctor = async (docId) => {
+        try {
+            const { data } = await axios.post(
+                backendUrl + '/api/admin/delete-doctor',
+                { docId },
+                { headers: { atoken: aToken } }
+            )
+            if (data.success) {
+                toast.success(data.message)
+                await getAllDoctors()  // refresh list
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
+
     const changeAvailability = async (docId) => {
 
         try {
-            const {data} = await axios.post(backendUrl + '/api/admin/change-availability', {docId}, {headers: {aToken}})
-            if(data.success){
+            const { data } = await axios.post(backendUrl + '/api/admin/change-availability', { docId }, { headers: { aToken } })
+            if (data.success) {
                 toast.success(data.message)
                 getAllDoctors()
-            }else{
+            } else {
                 toast.error(data.message)
             }
         } catch (error) {
@@ -55,10 +97,12 @@ const [aToken, setAToken] = useState(
         backendUrl,
         doctors,
         getAllDoctors,
-        changeAvailability
+        changeAvailability,
+        updateDoctor,
+        deleteDoctor
     }
 
-    return(
+    return (
         <AdminContext.Provider value={value}>
             {props.children}
         </AdminContext.Provider>
